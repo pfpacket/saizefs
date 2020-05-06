@@ -1,0 +1,17 @@
+[package]
+name = "saizefs"
+version = "0.0.1"
+authors = [ "afpacket <afpacket@gmail.com>" ]
+edition = "2018"
+
+[[bin]]
+name = "saizefs"
+
+[dependencies]
+libc = "0.2"
+env_logger = "0.7"
+rusqlite = "0.23"
+rust-9p = { git = "https://github.com/pfpacket/rust-9p" }
+
+[profile.release]
+opt-level = 3

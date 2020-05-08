@@ -1,6 +1,5 @@
 use rs9p::srv::{Fid, Filesystem};
 use rs9p::*;
-use rusqlite;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::{Component, Path, PathBuf};
@@ -13,9 +12,9 @@ macro_rules! errno {
 
 fn make_qid(typ: rs9p::QidType, path: u64) -> rs9p::Qid {
     rs9p::Qid {
-        typ: typ,
+        typ,
         version: 0,
-        path: path,
+        path,
     }
 }
 
@@ -30,8 +29,13 @@ fn make_stat(is_dir: bool) -> rs9p::Stat {
     };
 
     rs9p::Stat {
-        mode: if is_dir { libc::S_IFDIR | libc::S_IXUSR | libc::S_IXGRP | libc::S_IXOTH }
-              else { libc::S_IFREG } | libc::S_IRUSR | libc::S_IRGRP | libc::S_IROTH,
+        mode: if is_dir {
+            libc::S_IFDIR | libc::S_IXUSR | libc::S_IXGRP | libc::S_IXOTH
+        } else {
+            libc::S_IFREG
+        } | libc::S_IRUSR
+            | libc::S_IRGRP
+            | libc::S_IROTH,
         uid: unsafe { libc::getuid() },
         gid: unsafe { libc::getgid() },
         nlink: 1,
@@ -157,7 +161,7 @@ impl Saizefs {
                 .and_then(|d| d.entries.get(&file));
         }
 
-        return None;
+        None
     }
 }
 
@@ -216,7 +220,7 @@ impl Filesystem for Saizefs {
             already_read: false,
         });
 
-        Ok(Fcall::Rwalk { wqids: wqids })
+        Ok(Fcall::Rwalk { wqids })
     }
 
     fn rgetattr(&mut self, fid: &mut Fid<Self::Fid>, req_mask: GetattrMask) -> Result<Fcall> {
@@ -311,8 +315,5 @@ fn saizefs_basic_test() {
             .map(|(_, e)| e.data.clone())
             .collect::<Vec<String>>()
     );
-    println!(
-        "{:?}",
-        fs.get_node("/イタリアンサラダ/price").unwrap().data
-    );
+    println!("{:?}", fs.get_node("/イタリアンサラダ/price").unwrap().data);
 }

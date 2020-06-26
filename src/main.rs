@@ -103,7 +103,7 @@ impl Saizefs {
         let mut root = Entry::new("/".to_owned(), rs9p::QidType::DIR, 0, "".to_owned());
 
         let mut inode = 1;
-        for dish in dishes.filter(|d| d.is_ok()).map(|d| d.unwrap()) {
+        for dish in dishes.filter_map(|d| d.ok()) {
             let mut dish_entry =
                 Entry::new(dish[0].clone(), rs9p::QidType::DIR, inode, "".to_owned());
             inode += 1;
